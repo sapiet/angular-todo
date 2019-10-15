@@ -1,0 +1,83 @@
+<section class="todoapp">
+  <header class="header">
+    <h1>Todos</h1>
+    <input
+      (keydown.enter)="addTodo($event)"
+      type="text"
+      class="new-todo"
+      placeholder="Add a new task ..."
+    >
+
+    <i
+      *ngIf="requesting"
+      class="loader fas fa-circle-notch fa-spin"
+    ></i>
+  </header>
+
+  <div class="main">
+    <input
+      (change)="onAllCompleteChange($event)"
+      [(ngModel)]="allComplete"
+      type="checkbox"
+      id="toggle-all"
+      class="toggle-all"
+    >
+    <label for="toggle-all">Mark all as complete</label>
+
+    <ul class="todo-list">
+      <li
+        *ngFor="let todo of filteredTodos()"
+        [ngClass]="{completed: todo.completed, editing: todo === editingTodo}"
+        class="todo"
+      >
+        <div class="view">
+          <input
+            [checked]="todo.completed"
+            (change)="onStateChange($event, todo)"
+            type="checkbox"
+            class="toggle"
+          >
+          <label (dblclick)="startEditing(todo)">
+            {{ todo.name }}
+          </label>
+          <button class="destroy" (click)="removeTodo(todo)"></button>
+        </div>
+
+        <input
+          type="text"
+          class="edit"
+          #editedTodoInput
+          [(ngModel)]="editedTodo"
+          (keydown.escape)="cancelEditing()"
+          (keydown.enter)="stopEditing()"
+        >
+      </li>
+    </ul>
+  </div>
+
+  <footer class="footer">
+    <span class="todo-count">
+        <strong>
+            {{ activeCount() }}
+        </strong>
+
+        item{{ activeCount() ? 's' : '' }} left
+    </span>
+
+    <ul class="filters">
+      <li *ngFor="let index of getFilterIndexes()">
+        <a
+          (click)="applyFilter($event, index)"
+          [ngClass]="{selected: index === filter}"
+          href="#"
+        >
+          {{ filters[index].label }}
+        </a>
+      </li>
+    </ul>
+
+    <button class="clear-completed" (click)="removeCompleted()">
+      Clear completed
+    </button>
+  </footer>
+</section>
