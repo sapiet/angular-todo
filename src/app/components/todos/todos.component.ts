@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-todos',
@@ -28,7 +27,14 @@ export class TodosComponent implements OnInit {
     }
   };
 
-  constructor(private store: Store<{todos: any}>) {
+  constructor(
+    private store: Store<{todos: any}>
+  ) {
+    const hash = window.location.hash.substr(1);
+
+    if (this.filterExists(hash)) {
+      this.filter = hash;
+    }
   }
 
   public ngOnInit() {
@@ -61,9 +67,16 @@ export class TodosComponent implements OnInit {
     return Object.keys(this.filters);
   }
 
+  public filterExists(filter: string) {
+    return this.getFilterIndexes().indexOf(filter) >= 0;
+  }
+
   public applyFilter(event, index) {
     event.preventDefault();
-    this.filter = index;
+    if (this.filterExists(index)) {
+      this.filter = index;
+      window.location.hash = index;
+    }
   }
 
   public filteredTodos() {
